@@ -1,9 +1,5 @@
-locals {
-  envs = { for tuple in regexall("(.*)=(.*)", file(".env")) : tuple[0] => tuple[1] }
-}
-
 provider "aws" {
-    access_key = local.envs["ACCESS_KEY"]
-    secret_key = local.envs["SECRET_KEY"]
-    region = local.envs["REGION"]
+    access_key = var.IAM_ACCESS_KEY
+    secret_key = var.IAM_SECRET_KEY
+    region = var.REGION
 }
