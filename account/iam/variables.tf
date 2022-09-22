@@ -1,17 +1,11 @@
-# credentials 
-variable "iam_access_key" {
+/**
+   * @dev Credentials
+*/
+variable "admin_iam_access_key" {
     type = string 
     default = "value"
 }
-variable "iam_secret_key" {
-    type = string 
-    default = "value"
-}
-variable "access_key" {
-    type = string 
-    default = "value"
-}
-variable "secret_key" {
+variable "admin_iam_secret_key" {
     type = string 
     default = "value"
 }
