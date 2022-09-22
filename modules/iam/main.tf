@@ -1,63 +1,28 @@
 /**
    * @dev Create group/s 
 */
-resource "aws_iam_group" "admins" {
-  name = "Admin"
-
-  # tags = {
-  #   tag-key = ""
-  # }
-}
-
-resource "aws_iam_group" "job_function_cicd" {
-  name = "CICD"
-
-  # tags = {
-  #   tag-key = ""
-  # }
+resource "aws_iam_group" "groups" {
+  count = length(var.groups)
+  name  = var.groups[count.index]
 }
 
 /**
    * @dev Create user/s with programmatic access
 */ 
-resource "aws_iam_user" "admin_ecr" {
-  name = "ECR-Admin"
+resource "aws_iam_user" "users" {
+  count = length(var.users)
+  name  = var.users[count.index]
+  path  = "/"
 
   # tags = {
-  #   tag-key = ""
+  #   Name = var.users[count.index]
   # }
 }
 
-resource "aws_iam_access_key" "admin_ecr_access_key" {
-  user = aws_iam_user.admin_ecr.name
+resource "aws_iam_access_key" "users" {
+  count = length(var.users)
+  user  = aws_iam_user.users[count.index].name
 }
-
-
-resource "aws_iam_user" "admin_eks" {
-  name = "EKS-Admin"
-
-  # tags = {
-  #   tag-key = ""
-  # }
-}
-
-resource "aws_iam_access_key" "admin_eks_access_key" {
-  user = aws_iam_user.admin_eks.name
-}
-
-
-resource "aws_iam_user" "job_function_cicd_user_1" {
-  name = "Renz"
-
-  # tags = {
-  #   tag-key = ""
-  # }
-}
-
-resource "aws_iam_access_key" "job_function_cicd_user_1_access_key" {
-  user = aws_iam_user.job_function_cicd_user_1.name
-}
-
 
 /**
    * @dev Create identity-based policies
@@ -66,38 +31,42 @@ resource "aws_iam_access_key" "job_function_cicd_user_1_access_key" {
 /**
    * @dev Attach user/s to group/s
 */
-resource "aws_iam_user_group_membership" "admins_attach_users" {
+resource "aws_iam_group_membership" "admin" {
+  name = "Admin"
   users = [
-    aws_iam_user.admin_ecr.name,
-    aws_iam_user.admin_eks.name,
+    "Admin-ECR",
+    "Admin-EKS",
+    "Admin-IAM"
   ]
-
-  groups = aws_iam_group.admins.name
+  group = aws_iam_group.groups[0].name
 }
 
-resource "aws_iam_user_group_membership" "job_function_cicd_attach_users" {
+resource "aws_iam_group_membership" "cicd" {
+  name = "CICD"
   users = [
-    aws_iam_user.job_function_cicd_user_1.name,
-    aws_iam_user.admin_eks.name,
+    "CICD-Renz"
   ]
-
-  groups = aws_iam_group.job_function_cicd.name
+  group = aws_iam_group.groups[1].name
 }
 
 /**
    * @dev Attach policy/ies to group/s or user/s
 */
-resource "aws_iam_user_policy_attachment" "admins_admin_ecr_attach_policy" {
-  user       = aws_iam_user.admin_ecr.name
+
+resource "aws_iam_user_policy_attachment" "admin-ecr" {
+  user       = aws_iam_user.users[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
 }
 
-resource "aws_iam_user_policy_attachment" "admins_admin_eks_attach_policy" {
-  user       = aws_iam_user.admin_ecr.name
+resource "aws_iam_user_policy_attachment" "admin-eks" {
+  user       = aws_iam_user.users[1].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
-resource "aws_iam_user_policy_attachment" "job_function_cicd_attach_policy" {
-  user       = aws_iam_user.admin_ecr.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+resource "aws_iam_user_policy_attachment" "admin-iam" {
+  user       = aws_iam_user.users[2].name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
+// TODO - attach policy to cicd users
+
