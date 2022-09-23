@@ -10,5 +10,3 @@
     * [USER] EKS-Admin -> full access to eks
 * [GROUP] CICD (Job Function)
     * [USER] Renz -> least-privilege-access to cicd resources he/she needs
-
-# Naming Convention 
