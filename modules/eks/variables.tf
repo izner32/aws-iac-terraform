@@ -19,15 +19,24 @@ variable "cidr_block" {
   }
 }
 
-variable "route_table_public_count" {
-  type = number
-  description = "Number of Public Route Tables"
-  default = 1
+variable "resource_counts" {
+  type = map(number)
+  description = "A Map of Resource Counts"
+  default = {
+    route_table_public = 1 
+    route_table_private = 2
+
+    subnet_public = 2
+    subnet_private = 2
+
+    nat_gateway = 2
+  }
 }
 
-variable "route_table_private_count" {
-  type = number 
-  description = "Number of Private Route Tables"
+variable "availability_zones" {
+  type = list(string)
+  description = "List of Availability Zones"
+  default = ["us-east-1a", "us-east-1b"]
 }
 
 /**
