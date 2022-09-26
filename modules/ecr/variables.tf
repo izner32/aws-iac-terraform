@@ -1,7 +1,18 @@
+/**
+   * @dev ECR Configuration
+*/
 variable "environment" {
     type = string 
-    description = "Repository name"
+    description = "Environment Name"
 }   
+
+variable "repository_types" {
+  type = list(string)
+  default = [
+      "snapshot",
+      "latest"
+  ]
+}
 
 variable "image_tag_mutability" {
   type = bool

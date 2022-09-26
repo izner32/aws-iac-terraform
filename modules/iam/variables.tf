@@ -1,19 +1,18 @@
 /**
-   * @dev List of IAM Groups
+   * @dev General IAM Configurations
 */
 variable "groups" {
   type = list(string)
+  description = "List of groups to create separated by Admin, and Job Functions (e.g. cicd)"
   default = [
     "Admin",
     "CICD"
   ]
 }
 
-/**
-   * @dev List of IAM Users
-*/
 variable "users" {
   type = list(string)
+  description = "List of users to create"
   default = [
     // admin-users
     "Admin-ECR",
@@ -24,3 +23,7 @@ variable "users" {
     "CICD-Renz"
   ]
 }
+
+/**
+   * @dev IAM Configurations
+*/

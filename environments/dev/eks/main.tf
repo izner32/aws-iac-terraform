@@ -1,5 +1,5 @@
-module "ecr" {
-    source = "../../../modules/ecr"
+module "eks" {
+    source = "../../../modules/eks"
 
-    environment = "${var.environment}"
+    environment = "dev"
 }

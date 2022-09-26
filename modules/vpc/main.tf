@@ -1,10 +1,25 @@
-// TODO - study cidr | https://www.youtube.com/watch?v=z07HTSzzp3o
-// TODO - make each of the public/private subnet be located in a different az
-
 /**
-   * @dev Create VPC Network
+  Overview: 
+   * Create VPC Network
+   * Create Internet Gateway
+   * Create Route Tables
+   * Create Subnets
+     * Attach Route Tables to Subnets
+   * Create corresponding NAT Gateways for each Private Subnet
+     * Create EIP for NAT Gateways
+     * Attach EIP to NAT Gateways
+   
+   * Create Firewall on Resource Level - Security Groups
+   * Create Network Interface  
+     * Create EIP for Network Interface
+     * Attach EIP to Network Interface
+  
+  TODO: 
+   * Study CIDR
+   * Make each of the public/private subnet be located in a different az
 */
 
+# Create VPC Network
 resource "aws_vpc" "vpc" {
     cidr_block = var.cidr_block["vpc"]
     instance_tenancy = "default"  
@@ -18,18 +33,12 @@ resource "aws_vpc" "vpc" {
     enable_classiclink_dns_support = false
 }
 
-/**
-   * @dev Create Internet Gateway
-*/
-
+# Create Internet Gateway
 resource "aws_internet_gateway" "internet_gateway" {
     vpc_id = aws_vpc.vpc.id
 }
 
-/**
-   * @dev Create Route Tables for Subnets
-*/
-
+# Create Route Tables
 resource "aws_route_table" "public" {
     vpc_id = aws_vpc.vpc.id
 
@@ -49,10 +58,7 @@ resource "aws_route_table" "private" {
     }
 }
 
-/**
-   * @dev Create Subnets
-*/
-
+# Create Subnets
 resource "aws_subnet" "public" {
     count = var.resource_counts["subnet_public"]
     vpc_id = aws_vpc.prod-vpc.id 
@@ -73,10 +79,7 @@ resource "aws_subnet" "private" {
     map_public_ip_on_launch = true 
 }
 
-/**
-   * @dev Attach Route Table to Subnets
-*/
-
+# Attach Route Tables to Subnets
 resource "aws_route_table_association" "public" {
     count = var.resource_counts["subnet_public"]
     subnet_id = aws_subnet.public[count.index].id
@@ -89,10 +92,7 @@ resource "aws_route_table_association" "private" {
     route_table_id = aws_route_table.private[count.index].id
 }
 
-/**
-   * @dev Create EIP for NAT Gateways
-*/
-
+# 
 resource "aws_eip" "eip-nat-gw" {
     count = var.resource_counts["nat_gateway"]
     vpc = true 
@@ -101,20 +101,14 @@ resource "aws_eip" "eip-nat-gw" {
     depends_on = [aws_internet_gateway.gw]
 }
 
-/**
-   * @dev Create corresponding NAT Gateway for each Private Subnets and Attach EIP
-*/
-
+# Create corresponding NAT Gateways for each Private Subnet
 resource "aws_nat_gateway" "gw" {
     count = var.resource_counts["nat_gateway"]
     allocation_id = aws_eip.eip-nat-gw[count.index].id
     subnet_id = aws_subnet.public[count.index].id
 }
 
-/**
-   * @dev Create Security Groups as Firewall for Resources
-*/
-
+# Create Firewall on Resource Level - Security Groups
 resource "aws_security_group" "allow_web" {
     name        = "allow_web"
     description = "Allow web inbound traffic"
@@ -157,20 +151,14 @@ resource "aws_security_group" "allow_web" {
     }
 }
 
-/**
-   * @dev Create Network Interface
-*/
-
+# Create Network Interface
 resource "aws_network_interface" "web-server-nic" {
     subnet_id       = aws_subnet.public[0].id
     private_ips     = ["10.0.0.50"]
     security_groups = [aws_security_group.web.id]
 }
 
-/**
-   * @dev Create EIP for Network Interface
-*/
-
+# Create EIP for Network Interface
 resource "aws_eip" "eip-network-interface" {
     vpc = true 
     network_interface = aws_network_interface.web-server-nic.id 

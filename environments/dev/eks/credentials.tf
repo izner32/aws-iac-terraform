@@ -1,9 +1,3 @@
-variable "environment" {
-    type        = string
-    description = "Environment name, e.g. dev,prod,etc. to be used as Repository Name"
-    default = "dev"
-}
-
 /**
    * @dev Credentials
 */

@@ -1,4 +1,4 @@
 # Overview
-## EKS & Network Design
-![EKS & Network Design](/diagram/network.drawio.png)
+## EKS Design
+![EKS & Network Design](./diagrams/network.drawio.png)
 

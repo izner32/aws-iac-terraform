@@ -1,6 +1,9 @@
-// create eks cluster
-resource "aws_eks_cluster" "eks_cluster" {
-  name     = var.environment
+/**
+  Overview:
+   * Create EKS Cluster
+*/
+resource "aws_eks_cluster" "cluster" {
+  name     = "${var.environment}-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
